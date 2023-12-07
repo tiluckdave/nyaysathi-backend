@@ -3,7 +3,7 @@ from flask_cors import CORS, cross_origin
 from lib.kanoon import searchKanoon, getDocument
 from lib.llm import generateResponse, getAct, generateChatResponse
 from lib.firebase import uploadFile, fileExists, getFileContent
-from lib.utils import htmlToText, getDataChunks, createKnowledgeHub, createFileWithContent, deleteFile
+from lib.utils import htmlToText, createFileWithContent, deleteFile
 
 app = Flask(__name__)
 cors = CORS(app)
