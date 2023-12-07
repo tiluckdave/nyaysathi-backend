@@ -2,7 +2,7 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import storage
 
-cred = credentials.Certificate('lib\key.json')
+cred = credentials.Certificate('lib/key.json')
 
 app = firebase_admin.initialize_app(cred, {'storageBucket': 'nyaysathi.appspot.com'})
 
