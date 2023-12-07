@@ -54,3 +54,6 @@ def chat():
         text += getFileContent(f"{docid}.txt") + "\n\n\n\n"
     response = generateChatResponse(text, previousContext, followUpQuestion)
     return jsonify({'answer': response})
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=80)
