@@ -18,7 +18,7 @@ def searchKanoon(query):
     
 def getDocument(docId):
     try:
-        url = f"doc/{docid}/"
+        url = f"doc/{docId}/"
         response = requests.request("POST", baseurl + url, headers=headers)
         return response.json()['doc']
     except Exception as e:

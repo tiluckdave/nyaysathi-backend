@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 from lib.kanoon import searchKanoon, getDocument
-from lib.llm import generateResponse, getAct, generateChatResponse
+from lib.llm import generateResponse, getAct, generateChatResponse, visionOCR, SummarizeLegalText
 from lib.firebase import uploadFile, fileExists, getFileContent
 from lib.utils import htmlToText, createFileWithContent, deleteFile
 
@@ -54,6 +54,18 @@ def chat():
         text += getFileContent(f"{docid}.txt") + "\n\n\n\n"
     response = generateChatResponse(text, previousContext, followUpQuestion)
     return jsonify({'answer': response})
+
+@app.route('/summarize', methods=['POST'])
+@cross_origin()
+def summarize():
+    fileurl = request.json['fileurl']
+    fileExt = fileurl.split(".")[-1]
+    text = ""
+    if fileExt != "pdf":
+        text = visionOCR(fileurl)
+    
+    summary = SummarizeLegalText(text)
+    return jsonify({'summary': summary})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)

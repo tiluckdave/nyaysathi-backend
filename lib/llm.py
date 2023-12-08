@@ -56,3 +56,33 @@ def getAct(question):
       max_tokens=50,
     )
     return response.choices[0].text
+
+def visionOCR(imageURL):
+    response = client.chat.completions.create(
+    model="gpt-4-vision-preview",
+    messages=[
+        {
+        "role": "user",
+        "content": [
+            {"type": "text", "text": "Detect the language and return the exact text from the image."},
+            {
+            "type": "image_url",
+            "image_url": {
+                "url": imageURL,
+            },
+            },
+        ],
+        }
+    ],
+    max_tokens=300,
+    )
+
+    return response.choices[0].message.content
+
+def SummarizeLegalText(text):
+    response = client.completions.create(
+        model = "gpt-3.5-turbo-instruct",
+        prompt = "Summarize the given text in minimum 2 and a maximum of 10 sentences. Try to simplify the difficult language in the simplest terms. use markdown for better representation of headings, lists, underlines, bolds and etc. Do not add anything from your own.\n\n" + text,
+        max_tokens=500,
+    )
+    return response.choices[0].text

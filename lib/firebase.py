@@ -10,7 +10,7 @@ bucket = storage.bucket()
 
 def uploadFile(filename, path):
     try:
-        blob = bucket.blob(filename+".txt")
+        blob = bucket.blob(f"{filename}.txt")
         blob.upload_from_filename(path)
         blob.make_public()
     except Exception as e:

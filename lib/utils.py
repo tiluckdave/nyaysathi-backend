@@ -24,9 +24,9 @@ def createKnowledgeHub(chunks: list):
     return knowledge_hub
 
 def createFileWithContent(filename, content):
-    with open(f"../docs/{docid}.txt", "w", encoding="utf-8", newline='') as f:
-        f.write(plain_text)
-    return '../docs/'+filename+'.txt'
+    with open(f"docs/{filename}.txt", "w", encoding="utf-8", newline='') as f:
+        f.write(content)
+    return f"docs/{filename}.txt"
 
 def deleteFile(path):
     os.remove(path)
