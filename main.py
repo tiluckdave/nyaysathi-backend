@@ -1,9 +1,10 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
+from pdf2image import convert_from_bytes
 from lib.kanoon import searchKanoon, getDocument
 from lib.llm import generateResponse, getAct, generateChatResponse, visionOCR, SummarizeLegalText
 from lib.firebase import uploadFile, fileExists, getFileContent
-from lib.utils import htmlToText, createFileWithContent, deleteFile
+from lib.utils import htmlToText, createFileWithContent, deleteFile, encodeImage
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -58,12 +59,24 @@ def chat():
 @app.route('/summarize', methods=['POST'])
 @cross_origin()
 def summarize():
-    fileurl = request.json['fileurl']
+    file = request.files['file']
+    filename = file.filename
+    print(filename)
+    file.save(f"files/{filename}")
+    fileurl = "./files/" + filename
+    print(fileurl)
     fileExt = fileurl.split(".")[-1]
     text = ""
+    imgs = []
     if fileExt != "pdf":
-        text = visionOCR(fileurl)
-    
+        imgs.append(encodeImage(fileurl))
+        text = visionOCR(imgs)
+    else:
+        images = convert_from_bytes(open(fileurl, 'rb').read())
+        for i in range(len(images)):
+            images[i].save(f"images/{i}.png", 'PNG')
+            imgs.append(encodeImage(f"images/{i}.png"))
+        text = visionOCR(imgs)
     summary = SummarizeLegalText(text)
     return jsonify({'summary': summary})
 

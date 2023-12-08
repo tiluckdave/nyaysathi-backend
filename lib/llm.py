@@ -57,23 +57,27 @@ def getAct(question):
     )
     return response.choices[0].text
 
-def visionOCR(imageURL):
-    response = client.chat.completions.create(
-    model="gpt-4-vision-preview",
-    messages=[
+def visionOCR(imgs):
+    msg = [
         {
         "role": "user",
         "content": [
             {"type": "text", "text": "Detect the language and return the exact text from the image."},
-            {
-            "type": "image_url",
-            "image_url": {
-                "url": imageURL,
-            },
-            },
         ],
         }
-    ],
+    ]
+    
+    for img in imgs:
+        msg[0]['content'].append({
+            "type": "image_url",
+            "image_url": {
+                "url": f"data:image/png;base64,{img}",
+            },
+        })
+    
+    response = client.chat.completions.create(
+    model="gpt-4-vision-preview",
+    messages=msg,
     max_tokens=300,
     )
 

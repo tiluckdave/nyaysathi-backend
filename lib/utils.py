@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 import os
-
+import base64
 from bs4 import BeautifulSoup
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
@@ -30,3 +30,7 @@ def createFileWithContent(filename, content):
 
 def deleteFile(path):
     os.remove(path)
+    
+def encodeImage(image_path):
+  with open(image_path, "rb") as image_file:
+    return base64.b64encode(image_file.read()).decode('utf-8')
