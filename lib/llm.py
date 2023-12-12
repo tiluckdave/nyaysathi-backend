@@ -25,7 +25,7 @@ def generateResponse(text, question):
     retriever = knowledge_hub.as_retriever(search_type="similarity", search_kwargs={"k": 2})
     
     chain = RetrievalQA.from_chain_type(
-        llm=openai(api_key=os.getenv("OPENAI_KEY"), organization=os.getenv("ORG"), temperature=0.6, model_name="gpt-3.5-turbo-instruct", max_tokens=1000),
+        llm=openai(api_key=os.getenv("OPENAI_KEY"), organization=os.getenv("ORG"), temperature=0.6, model_name="gpt-3.5-turbo-1106", max_tokens=1000),
         chain_type="stuff",
         retriever=retriever,
         return_source_documents=True,
@@ -40,7 +40,7 @@ def generateChatResponse(text, previousContext, followUpQuestion):
     retriever = knowledge_hub.as_retriever(search_type="similarity", search_kwargs={"k": 2})
     
     chain = RetrievalQA.from_chain_type(
-        llm=openai(api_key=os.getenv("OPENAI_KEY"), organization=os.getenv("ORG"), temperature=0.6, model_name="gpt-3.5-turbo-instruct", max_tokens=1000),
+        llm=openai(api_key=os.getenv("OPENAI_KEY"), organization=os.getenv("ORG"), temperature=0.6, model_name="gpt-3.5-turbo-1106", max_tokens=1000),
         chain_type="stuff",
         retriever=retriever,
         return_source_documents=True,
@@ -85,7 +85,7 @@ def visionOCR(imgs):
 
 def SummarizeLegalText(text):
     response = client.completions.create(
-        model = "gpt-3.5-turbo-instruct",
+        model = "gpt-3.5-turbo-1106",
         prompt = "Summarize the given text in minimum 2 and a maximum of 10 sentences. Try to simplify the difficult language in the simplest terms. use markdown for better representation of headings, lists, underlines, bolds and etc. Do not add anything from your own.\n\n" + text,
         max_tokens=500,
     )
