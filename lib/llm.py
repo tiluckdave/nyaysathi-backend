@@ -9,7 +9,7 @@ from lib.utils import getDataChunks, createKnowledgeHub
 
 ResponsePrompt = """Consider you are a legal advisor based in India. Your day to day job is to reply to legal queries in the most simplified language possible by using least words. Make sure the reader of the response might not understand legal jargons so avoid difficult language. You can mention laws, acts, sections, subsections applicable in your response for the sake of reference or to support the accuraccy of your response. At the end of the response also mention the punishments given in the laws for the action if any (optional).
 
-Answer the question using the given knowledge hub as a part of the retriver. Do not answer the question if you are not sure about the answer, just reply with "I am not sure about this".
+Answer the question using the given knowledge hub as a part of the retriver. Do not answer the question if you are not sure about the answer, just reply with "I am not sure about this". If the question is in hindi reply in hindi and if the question is in english reply in english. Do not mix the languages. If the question is in a different language other than hindi or english reply with "I can only understand English and Hindi.".
 
 """
 
@@ -25,7 +25,7 @@ def generateResponse(text, question):
     retriever = knowledge_hub.as_retriever(search_type="similarity", search_kwargs={"k": 2})
     
     chain = RetrievalQA.from_chain_type(
-        llm=openai(api_key=os.getenv("OPENAI_KEY"), organization=os.getenv("ORG"), temperature=0.6, model_name="gpt-3.5-turbo-instruct", max_tokens=1000),
+        llm=openai(api_key=os.getenv("OPENAI_KEY"), organization=os.getenv("ORG"), temperature=0.6, model_name="gpt-3.5-turbo-instruct", max_tokens=600),
         chain_type="stuff",
         retriever=retriever,
         return_source_documents=True,
@@ -40,7 +40,7 @@ def generateChatResponse(text, previousContext, followUpQuestion):
     retriever = knowledge_hub.as_retriever(search_type="similarity", search_kwargs={"k": 2})
     
     chain = RetrievalQA.from_chain_type(
-        llm=openai(api_key=os.getenv("OPENAI_KEY"), organization=os.getenv("ORG"), temperature=0.6, model_name="gpt-3.5-turbo-instruct", max_tokens=1000),
+        llm=openai(api_key=os.getenv("OPENAI_KEY"), organization=os.getenv("ORG"), temperature=0.6, model_name="gpt-3.5-turbo-instruct", max_tokens=600),
         chain_type="stuff",
         retriever=retriever,
         return_source_documents=True,
@@ -86,7 +86,7 @@ def visionOCR(imgs):
 def SummarizeLegalText(text):
     response = client.completions.create(
         model = "gpt-3.5-turbo-instruct",
-        prompt = "Summarize the given text in minimum 2 and a maximum of 10 sentences. Try to simplify the difficult language in the simplest terms. use markdown for better representation of headings, lists, underlines, bolds and etc. Do not add anything from your own.\n\n" + text,
-        max_tokens=500,
+        prompt = "Summarize the given text in brief. If there is anything important which should be represented as it is do so, other than that try to simplify the difficult language in the simplest terms. Do not add anything from your own.\n\n" + text,
+        max_tokens=700,
     )
     return response.choices[0].text
