@@ -3,7 +3,7 @@ from flask_cors import CORS, cross_origin
 from pdf2image import convert_from_bytes
 from lib.kanoon import searchKanoon, getDocument
 from lib.llm import generateResponse, getAct, generateChatResponse, visionOCR, SummarizeLegalText
-from lib.firebase import uploadFile, fileExists, getFileContent
+from lib.firebase import uploadFile, fileExists, getFileContent, uploadOtherFile
 from lib.utils import htmlToText, createFileWithContent, deleteFile, encodeImage
 
 app = Flask(__name__)
@@ -80,5 +80,19 @@ def summarize():
     summary = SummarizeLegalText(text)
     return jsonify({'summary': summary})
 
+@app.route('/upload', methods=['POST'])
+@cross_origin()
+def upload():
+    file = request.files['file']
+    filename = file.filename
+    print(filename)
+    file.save(f"files/{filename}")
+    fileurl = "./files/" + filename
+    publicUrl = uploadOtherFile(filename, fileurl)
+    print(publicUrl)
+    if publicUrl != False:
+        deleteFile(fileurl)
+    return jsonify({'url': publicUrl})
+    
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)

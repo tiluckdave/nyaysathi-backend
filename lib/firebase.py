@@ -18,6 +18,16 @@ def uploadFile(filename, path):
         return False
     return True
 
+def uploadOtherFile(filename, path):
+    try:
+        blob = bucket.blob(filename)
+        blob.upload_from_filename(path)
+        blob.make_public()
+    except Exception as e:
+        print(e)
+        return False
+    return blob.public_url
+
 def fileExists(filename):
     try:
         blob = bucket.blob(filename)
