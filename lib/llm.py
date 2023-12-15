@@ -17,6 +17,10 @@ ActPrompt = """Based on the below question can you give the law, act, section, s
 
 """
 
+KYRPromt = """Based on the given data about the user such as age, gender, city, state and profession can you give me the list of 10 most relevant legal rights applicable to the person. Make each right a sentence and do not add any other information such as laws, acts, sections, subsections or punishments. Do not format the response in a list or any other format. Just give me the rights in plain text where each right is separated by a new line.
+
+Person: """
+
 client = OpenAI(api_key=os.getenv("OPENAI_KEY"), organization=os.getenv("ORG"))
 
 def generateResponse(text, question):
@@ -54,6 +58,15 @@ def getAct(question):
       model = "gpt-3.5-turbo-instruct",
       prompt = ActPrompt + question,
       max_tokens=50,
+    )
+    return response.choices[0].text
+
+
+def getKYR(data):    
+    response = client.completions.create(
+      model = "gpt-3.5-turbo-instruct",
+      prompt = KYRPromt + data,
+      max_tokens=500,
     )
     return response.choices[0].text
 

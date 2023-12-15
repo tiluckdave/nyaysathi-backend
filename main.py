@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 from pdf2image import convert_from_bytes
 from lib.kanoon import searchKanoon, getDocument
-from lib.llm import generateResponse, getAct, generateChatResponse, visionOCR, SummarizeLegalText
+from lib.llm import generateResponse, getAct, generateChatResponse, visionOCR, SummarizeLegalText, getKYR
 from lib.firebase import uploadFile, fileExists, getFileContent, uploadOtherFile
 from lib.utils import htmlToText, createFileWithContent, deleteFile, encodeImage
 
@@ -93,6 +93,25 @@ def upload():
     if publicUrl != False:
         deleteFile(fileurl)
     return jsonify({'url': publicUrl})
+
+
+@app.route('/kyr', methods=['POST'])
+@cross_origin()
+def kyr():
+    age = request.json['age']
+    gender = request.json['gender']
+    city = request.json['city']
+    state = request.json['state']
+    profession = request.json['profession']
     
+    data = f"A {gender}, {age} years old. Living in ${city}, ${state}. Who is ${profession} by profession."
+    rights = getKYR(data)
+    rights = rights.split("\n")
+    rights = list(filter(None, rights))
+    rights = [right[3:] for right in rights]
+    rights = [right.strip() for right in rights]
+    print(rights)
+    return jsonify({'rights': rights})
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
