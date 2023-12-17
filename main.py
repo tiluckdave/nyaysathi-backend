@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 from pdf2image import convert_from_bytes
 from lib.kanoon import searchKanoon, getDocument
-from lib.llm import generateResponse, getAct, generateChatResponse, visionOCR, SummarizeLegalText, getKYR
+from lib.llm import generateResponse, getAct, generateChatResponse, visionOCR, SummarizeLegalText, getKYR, getSpecs
 from lib.firebase import uploadFile, fileExists, getFileContent, uploadOtherFile
 from lib.utils import htmlToText, createFileWithContent, deleteFile, encodeImage
 
@@ -10,12 +10,19 @@ app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
+@app.route('/test', methods=['GET'])
+@cross_origin()
+def test():
+    return jsonify({'message': 'Hello World'})
+
 @app.route('/ask', methods=['POST'])
 @cross_origin()
 def ask():
     question = request.json['question']
     act = getAct(question)
+    specs = getSpecs(question)
     print(act)
+    print(specs)
     docs = searchKanoon(act)
     text = ""
     for doc in docs[:5]:
@@ -31,7 +38,7 @@ def ask():
                 deleteFile(path)
         text += getFileContent(f"{docid}.txt") + "\n\n\n\n"
     response = generateResponse(text, question)
-    return jsonify({'act': act, 'answer': response})
+    return jsonify({'act': act, 'answer': response, 'specs': specs})
 
 @app.route('/chat', methods=['POST'])
 @cross_origin()

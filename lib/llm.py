@@ -21,6 +21,10 @@ KYRPromt = """Based on the given data about the user such as age, gender, city, 
 
 Person: """
 
+SpecsPromt = """Depending upon the given question what are the different specifications the given question can be categorized into. The options are ["Criminal Law", "Civil Law", "Common Law", "Statutory Law", "Cyber Law"]. You can return multiple options if the question can be categorized into multiple categories. Return the response in comma separated values. do not add any thing else in the response.
+
+"""
+
 client = OpenAI(api_key=os.getenv("OPENAI_KEY"), organization=os.getenv("ORG"))
 
 def generateResponse(text, question):
@@ -60,6 +64,20 @@ def getAct(question):
       max_tokens=50,
     )
     return response.choices[0].text
+
+def getSpecs(question):    
+    response = client.completions.create(
+      model = "gpt-3.5-turbo-instruct",
+      prompt = SpecsPromt + question,
+      max_tokens=50,
+    )
+    values = response.choices[0].text
+    values = values.split(",")
+    values = [value.strip() for value in values]
+    values = [value.replace('"', '') for value in values]
+    options = ["Criminal Law", "Civil Law", "Common Law", "Statutory Law", "Cyber Law"]
+    values = [value for value in values if value in options]
+    return values
 
 
 def getKYR(data):    
