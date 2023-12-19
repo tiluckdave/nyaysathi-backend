@@ -45,10 +45,11 @@ def ask():
 @app.route('/ask-voice', methods=['POST'])
 @cross_origin()
 def askVoice():
+    print(request.files['file'])
     file = request.files['file']
-    file.save(f"files/{filename}")
-    fileurl = "./files/" + filename
-    publicUrl = uploadOtherFile(filename, fileurl)
+    file.save(f"files/hello.wav")
+    fileurl = "./files/hello.wav"
+    publicUrl = uploadOtherFile("hello.wav", fileurl)
     banglaText = banglaSpeechTOText(fileurl)
     print(banglaText)
 
