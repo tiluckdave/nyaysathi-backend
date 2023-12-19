@@ -19,9 +19,13 @@ def getDataChunks(data):
     return chunks
 
 def createKnowledgeHub(chunks: list):
-    embeddings = OpenAIEmbeddings(api_key=os.getenv("OPENAI_KEY"), organization=os.getenv("ORG"))
-    knowledge_hub = FAISS.from_texts(chunks, embeddings)
-    return knowledge_hub
+    try:
+        embeddings = OpenAIEmbeddings(api_key=os.getenv("OPENAI_KEY"), organization=os.getenv("ORG"))
+        knowledge_hub = FAISS.from_texts(chunks, embeddings)
+        return knowledge_hub
+    except:
+        print("Error")
+
 
 def createFileWithContent(filename, content):
     with open(f"docs/{filename}.txt", "w", encoding="utf-8", newline='') as f:
