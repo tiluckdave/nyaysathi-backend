@@ -67,7 +67,7 @@ def chat():
 @cross_origin()
 def summarize():
     file = request.files['file']
-    lang = request.form.get('lang', 'english')
+    lang = request.form.get('lang')
     filename = file.filename
     print(filename)
     file.save(f"files/{filename}")
