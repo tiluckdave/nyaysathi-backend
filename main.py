@@ -25,10 +25,10 @@ def ask():
     print(specs)
     docs = searchKanoon(act)
     text = ""
-    docs = []
+    sdocs = []
     for doc in docs[:5]:
         docid = doc['tid']
-        docs.append(docid)
+        sdocs.append(docid)
         print(docid)
         if not fileExists(f"{docid}.txt"):
             content = getDocument(docid)
@@ -40,7 +40,7 @@ def ask():
                 deleteFile(path)
         text += getFileContent(f"{docid}.txt") + "\n\n\n\n"
     response = generateResponse(text, question)
-    return jsonify({'act': act, 'answer': response, 'specs': specs, 'docs': docs})
+    return jsonify({'act': act, 'answer': response, 'specs': specs, 'docs': sdocs})
 
 @app.route('/chat', methods=['POST'])
 @cross_origin()
