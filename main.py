@@ -67,6 +67,7 @@ def chat():
 @cross_origin()
 def summarize():
     file = request.files['file']
+    lang = request.form.get('lang', 'english')
     filename = file.filename
     print(filename)
     file.save(f"files/{filename}")
@@ -84,7 +85,7 @@ def summarize():
             images[i].save(f"images/{i}.png", 'PNG')
             imgs.append(encodeImage(f"images/{i}.png"))
         text = visionOCR(imgs)
-    summary = SummarizeLegalText(text)
+    summary = SummarizeLegalText(text, lang)
     return jsonify({'summary': summary})
 
 @app.route('/upload', methods=['POST'])

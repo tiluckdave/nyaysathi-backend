@@ -114,10 +114,11 @@ def visionOCR(imgs):
 
     return response.choices[0].message.content
 
-def SummarizeLegalText(text):
+def SummarizeLegalText(text, lang):
+    prompt = f"Summarize the given text in brief. If there is anything important which should be represented as it is, do so. Otherwise, try to simplify the difficult language in the simplest terms. Do not add anything from your own.\n\n{text}\n\nLanguage: {lang}"
     response = client.completions.create(
-        model = "gpt-3.5-turbo-instruct",
-        prompt = "Summarize the given text in brief. If there is anything important which should be represented as it is do so, other than that try to simplify the difficult language in the simplest terms. Do not add anything from your own.\n\n" + text,
+        model="gpt-3.5-turbo-instruct",
+        prompt=prompt,
         max_tokens=700,
     )
     return response.choices[0].text
