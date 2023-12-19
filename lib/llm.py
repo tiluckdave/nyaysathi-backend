@@ -9,7 +9,7 @@ from lib.utils import getDataChunks, createKnowledgeHub
 
 ResponsePrompt = """Consider you are a legal advisor based in India. Your day to day job is to reply to legal queries in the most simplified language possible by using least words. Make sure the reader of the response might not understand legal jargons so avoid difficult language. You can mention laws, acts, sections, subsections applicable in your response for the sake of reference or to support the accuraccy of your response. At the end of the response also mention the punishments given in the laws for the action if any (optional).
 
-Answer the question using the given knowledge hub as a part of the retriver. Do not answer the question if you are not sure about the answer, just reply with "I am not sure about this". If the question is in hindi reply in hindi and if the question is in english reply in english. Do not mix the languages. If the question is in a different language other than hindi or english reply with "I can only understand English and Hindi.".
+Answer the question using the given knowledge hub as a part of the retriver. Do not answer the question if you think you are unsure about the answer, just reply with "I am not sure about this". Reply in the language of the question, If the question is in hindi reply in hindi and if the question is in english reply in english.". use proper law, acts, sections, subsections while responding in hindi.
 
 """
 
@@ -17,7 +17,7 @@ ActPrompt = """Based on the below question can you give the law, act, section, s
 
 """
 
-KYRPromt = """Based on the given data about the user such as age, gender, city, state and profession can you give me the list of 10 most relevant legal rights applicable to the person. Make each right a sentence and do not add any other information such as laws, acts, sections, subsections or punishments. Do not format the response in a list or any other format. Just give me the rights in plain text where each right is separated by a new line.
+KYRPromt = """Based on the given data about the user such as age, gender, city, state and profession can you give me the list of 10 specific rights that person must know in his profession, make the rights gender & age specific as well. Make each right a sentence and do not add any other information such as laws, acts, sections, subsections or punishments. Do not format the response in a list or any other format. Just give me the rights in plain text where each right is separated by a new line.
 
 Person: """
 
@@ -117,7 +117,7 @@ def visionOCR(imgs):
 
 def SummarizeLegalText(text, lang):
     print(lang)
-    prompt = f"Summarize the provided legal text using straightforward language, ensuring retention of all essential legal details. If the document refers to any acts, laws, or sections within the Indian judicial system, explicitly mention them and provide clear explanations in simplified terms. Maintain the approach of preserving crucial legal information while simplifying complex language. Do not introduce any extraneous details or information.\n\n{text}\n\nPlease summarize in {lang}"
+    prompt = f"Summarize the provided legal text using straightforward language, ensuring retention of all essential legal details. If the document refers to any acts, laws, or sections within the Indian judicial system, explicitly mention them and provide clear explanations in simplified terms. Maintain the approach of preserving crucial legal information while simplifying complex language. Do not introduce any extraneous details or information.\n\n{text}\n\nPlease respond with the appropriate summary strictly in {lang}"
     response = client.completions.create(
         model="gpt-3.5-turbo-instruct",
         prompt=prompt,

@@ -114,7 +114,7 @@ def kyr():
     state = request.json['state']
     profession = request.json['profession']
     
-    data = f"A {gender}, {age} years old. Living in ${city}, ${state}. Who is ${profession} by profession."
+    data = f"Tell me my rights as {gender}, {age} years old. Living in ${city}, ${state}. I am ${profession} by profession."
     rights = getKYR(data)
     rights = rights.split("\n")
     rights = list(filter(None, rights))
