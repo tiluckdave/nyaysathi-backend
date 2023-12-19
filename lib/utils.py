@@ -5,6 +5,8 @@ from bs4 import BeautifulSoup
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
+from banglaspeech2text import Speech2Text
+
 
 load_dotenv()
 
@@ -34,3 +36,8 @@ def deleteFile(path):
 def encodeImage(image_path):
   with open(image_path, "rb") as image_file:
     return base64.b64encode(image_file.read()).decode('utf-8')
+
+def banglaSpeechTOText(audio_path):
+    s2t = Speech2Text()
+    text = s2t.transcribe(audio_path)
+    return text

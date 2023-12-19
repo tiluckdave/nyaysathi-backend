@@ -4,7 +4,7 @@ from pdf2image import convert_from_bytes
 from lib.kanoon import searchKanoon, getDocument
 from lib.llm import generateResponse, getAct, generateChatResponse, visionOCR, SummarizeLegalText, getKYR, getSpecs, regenerateResponse
 from lib.firebase import uploadFile, fileExists, getFileContent, uploadOtherFile
-from lib.utils import htmlToText, createFileWithContent, deleteFile, encodeImage
+from lib.utils import htmlToText, createFileWithContent, deleteFile, encodeImage, banglaSpeechTOText
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -41,6 +41,16 @@ def ask():
         text += getFileContent(f"{docid}.txt") + "\n\n\n\n"
     response = generateResponse(text, question)
     return jsonify({'act': act, 'answer': response, 'specs': specs, 'docs': sdocs})
+
+@app.route('/ask-voice', methods=['POST'])
+@cross_origin()
+def askVoice():
+    file = request.files['file']
+    file.save(f"files/{filename}")
+    fileurl = "./files/" + filename
+    publicUrl = uploadOtherFile(filename, fileurl)
+    banglaText = banglaSpeechTOText(fileurl)
+    print(banglaText)
 
 @app.route('/reask', methods=['POST'])
 @cross_origin()
@@ -111,6 +121,8 @@ def upload():
     file.save(f"files/{filename}")
     fileurl = "./files/" + filename
     publicUrl = uploadOtherFile(filename, fileurl)
+    banglaText = banglaSpeechTOText(fileurl)
+    print(banglaText)
     print(publicUrl)
     if publicUrl != False:
         deleteFile(fileurl)
