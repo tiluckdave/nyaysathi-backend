@@ -40,6 +40,7 @@ def generateResponse(text, question):
     )
     
     result = chain({"query": ResponsePrompt + "Question: " + question})
+    print(result)
     return result['result']
 
 def generateChatResponse(text, previousContext, followUpQuestion):
@@ -114,10 +115,12 @@ def visionOCR(imgs):
 
     return response.choices[0].message.content
 
-def SummarizeLegalText(text):
+def SummarizeLegalText(text, lang):
+    print(lang)
+    prompt = f"Summarize the provided legal text using straightforward language, ensuring retention of all essential legal details. If the document refers to any acts, laws, or sections within the Indian judicial system, explicitly mention them and provide clear explanations in simplified terms. Maintain the approach of preserving crucial legal information while simplifying complex language. Do not introduce any extraneous details or information.\n\n{text}\n\nPlease summarize in {lang}"
     response = client.completions.create(
-        model = "gpt-3.5-turbo-instruct",
-        prompt = "Summarize the given text in brief. If there is anything important which should be represented as it is do so, other than that try to simplify the difficult language in the simplest terms. Do not add anything from your own.\n\n" + text,
-        max_tokens=700,
+        model="gpt-3.5-turbo-instruct",
+        prompt=prompt,
+        max_tokens=2000,
     )
     return response.choices[0].text
