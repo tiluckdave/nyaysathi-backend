@@ -2,9 +2,9 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 from pdf2image import convert_from_bytes
 from lib.kanoon import searchKanoon, getDocument
-from lib.llm import generateResponse, getAct, generateChatResponse, visionOCR, SummarizeLegalText, getKYR, getSpecs
+from lib.llm import generateResponse, getAct, generateChatResponse, visionOCR, SummarizeLegalText, getKYR, getSpecs, regenerateResponse
 from lib.firebase import uploadFile, fileExists, getFileContent, uploadOtherFile
-from lib.utils import htmlToText, createFileWithContent, deleteFile, encodeImage
+from lib.utils import htmlToText, createFileWithContent, deleteFile, encodeImage, banglaSpeechTOText
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -42,6 +42,29 @@ def ask():
     response = generateResponse(text, question)
     return jsonify({'act': act, 'answer': response, 'specs': specs, 'docs': sdocs})
 
+@app.route('/ask-voice', methods=['POST'])
+@cross_origin()
+def askVoice():
+    print(request.files['file'])
+    file = request.files['file']
+    file.save(f"files/hello.wav")
+    fileurl = "./files/hello.wav"
+    publicUrl = uploadOtherFile("hello.wav", fileurl)
+    banglaText = banglaSpeechTOText(fileurl)
+    print(banglaText)
+
+@app.route('/reask', methods=['POST'])
+@cross_origin()
+def reask():
+    response = request.json['response']
+    question = request.json['question']
+    docs = request.json['docs']
+    text = ""
+    for doc in docs:
+        text += getFileContent(f"{doc}.txt") + "\n\n\n\n"
+    response = regenerateResponse(text, question, response)
+    return jsonify({'answer': response})
+    
 @app.route('/chat', methods=['POST'])
 @cross_origin()
 def chat():
@@ -99,6 +122,8 @@ def upload():
     file.save(f"files/{filename}")
     fileurl = "./files/" + filename
     publicUrl = uploadOtherFile(filename, fileurl)
+    banglaText = banglaSpeechTOText(fileurl)
+    print(banglaText)
     print(publicUrl)
     if publicUrl != False:
         deleteFile(fileurl)
@@ -114,7 +139,7 @@ def kyr():
     state = request.json['state']
     profession = request.json['profession']
     
-    data = f"A {gender}, {age} years old. Living in ${city}, ${state}. Who is ${profession} by profession."
+    data = f"Tell me my rights as {gender}, {age} years old. Living in ${city}, ${state}. I am ${profession} by profession."
     rights = getKYR(data)
     rights = rights.split("\n")
     rights = list(filter(None, rights))
