@@ -43,6 +43,21 @@ def generateResponse(text, question):
     print(result)
     return result['result']
 
+def regenerateResponse(text, question, response):
+    chunks = getDataChunks(text)
+    knowledge_hub = createKnowledgeHub(chunks)
+    retriever = knowledge_hub.as_retriever(search_type="similarity", search_kwargs={"k": 2})
+    
+    chain = RetrievalQA.from_chain_type(
+        llm=openai(api_key=os.getenv("OPENAI_KEY"), organization=os.getenv("ORG"), temperature=0.6, model_name="gpt-3.5-turbo-instruct", max_tokens=600),
+        chain_type="stuff",
+        retriever=retriever,
+        return_source_documents=True,
+    )
+    
+    result = chain({"query": ResponsePrompt + "Question: " + question + "\n\nThe user is not satisfied with your previous answer\nPrevious Answer: " + response + "\nPlease provide a better answer."})
+    return result['result']
+
 def generateChatResponse(text, previousContext, followUpQuestion):
     chunks = getDataChunks(text)
     knowledge_hub = createKnowledgeHub(chunks)

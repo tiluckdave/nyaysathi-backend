@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 from pdf2image import convert_from_bytes
 from lib.kanoon import searchKanoon, getDocument
-from lib.llm import generateResponse, getAct, generateChatResponse, visionOCR, SummarizeLegalText, getKYR, getSpecs
+from lib.llm import generateResponse, getAct, generateChatResponse, visionOCR, SummarizeLegalText, getKYR, getSpecs, regenerateResponse
 from lib.firebase import uploadFile, fileExists, getFileContent, uploadOtherFile
 from lib.utils import htmlToText, createFileWithContent, deleteFile, encodeImage
 
@@ -42,6 +42,18 @@ def ask():
     response = generateResponse(text, question)
     return jsonify({'act': act, 'answer': response, 'specs': specs, 'docs': sdocs})
 
+@app.route('/reask', methods=['POST'])
+@cross_origin()
+def reask():
+    response = request.json['response']
+    question = request.json['question']
+    docs = request.json['docs']
+    text = ""
+    for doc in docs:
+        text += getFileContent(f"{doc}.txt") + "\n\n\n\n"
+    response = regenerateResponse(text, question, response)
+    return jsonify({'answer': response})
+    
 @app.route('/chat', methods=['POST'])
 @cross_origin()
 def chat():
