@@ -23,6 +23,7 @@ def test():
 @app.route('/ask', methods=['POST'])
 @cross_origin()
 def ask():
+    current_time = datetime.datetime.now().strftime("%H%M%S")
     question = request.json['question']
     act = getAct(question)
     specs = getSpecs(question)
@@ -116,6 +117,7 @@ def askVoice():
 @app.route('/reask', methods=['POST'])
 @cross_origin()
 def reask():
+    current_time = datetime.datetime.now().strftime("%H%M%S")
     response = request.json['response']
     question = request.json['question']
     docs = request.json['docs']
@@ -168,6 +170,7 @@ def chat():
 @app.route('/summarize', methods=['POST'])
 @cross_origin()
 def summarize():
+    current_time = datetime.datetime.now().strftime("%H%M%S")
     file = request.files['file']
     lang = request.form.get('lang')
     filename = file.filename
@@ -188,7 +191,24 @@ def summarize():
             imgs.append(encodeImage(f"images/{i}.png"))
         text = visionOCR(imgs)
     summary = SummarizeLegalText(text, lang)
-    return jsonify({'summary': summary})
+    apikey = 'dNfhDO4BhWNrZ6CbAXBkaCIubUV5m9P6bA1SgF8b'
+    voice = 'salman'
+    url = f'https://api.narakeet.com/text-to-speech/m4a?voice={voice}'
+
+    options = {
+        'headers': {
+            'Accept': 'application/octet-stream',
+            'Content-Type': 'text/plain',
+            'x-api-key': apikey,
+        },
+        'data': summary.encode('utf8')
+    }
+    with open('./files/output.m4a', 'wb') as f:
+        f.write(requests.post(url, **options).content)
+    status = uploadOtherFile(f"{current_time}_hello.m4a", "./files/output.m4a")
+    if status:
+        deleteFile("./files/output.m4a")
+    return jsonify({'summary': summary, 'voice':status})
 
 @app.route('/upload', methods=['POST'])
 @cross_origin()
