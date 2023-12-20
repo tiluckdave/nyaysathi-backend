@@ -45,8 +45,24 @@ def ask():
                 deleteFile(path)
         text += getFileContent(f"{docid}.txt") + "\n\n\n\n"
     response = generateResponse(text, question)
-    return jsonify({'act': act, 'answer': response, 'specs': specs, 'docs': sdocs})
+    apikey = 'dNfhDO4BhWNrZ6CbAXBkaCIubUV5m9P6bA1SgF8b'
+    voice = 'salman'
+    url = f'https://api.narakeet.com/text-to-speech/m4a?voice={voice}'
 
+    options = {
+        'headers': {
+            'Accept': 'application/octet-stream',
+            'Content-Type': 'text/plain',
+            'x-api-key': apikey,
+        },
+        'data': response.encode('utf8')
+    }
+    with open('./files/output.m4a', 'wb') as f:
+        f.write(requests.post(url, **options).content)
+    status = uploadOtherFile(f"{current_time}_hello.m4a", "./files/output.m4a")
+    if status:
+        deleteFile("./files/output.m4a")
+    return jsonify({'act': act, 'voice':status, 'answer': response, 'specs': specs, 'docs': sdocs})
 
 
 @app.route('/ask-voice', methods=['POST'])
@@ -107,7 +123,24 @@ def reask():
     for doc in docs:
         text += getFileContent(f"{doc}.txt") + "\n\n\n\n"
     response = regenerateResponse(text, question, response)
-    return jsonify({'answer': response})
+    apikey = 'dNfhDO4BhWNrZ6CbAXBkaCIubUV5m9P6bA1SgF8b'
+    voice = 'salman'
+    url = f'https://api.narakeet.com/text-to-speech/m4a?voice={voice}'
+
+    options = {
+        'headers': {
+            'Accept': 'application/octet-stream',
+            'Content-Type': 'text/plain',
+            'x-api-key': apikey,
+        },
+        'data': response.encode('utf8')
+    }
+    with open('./files/output.m4a', 'wb') as f:
+        f.write(requests.post(url, **options).content)
+    status = uploadOtherFile(f"{current_time}_hello.m4a", "./files/output.m4a")
+    if status:
+        deleteFile("./files/output.m4a")
+    return jsonify({'answer': response, 'voice': status})
     
 @app.route('/chat', methods=['POST'])
 @cross_origin()
