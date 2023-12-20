@@ -50,9 +50,9 @@ def ask():
 def askVoice():
     print(request.files['file'])
     file = request.files['file']
+    # lang = request.form.get('lang')
     file.save(f"files/hello.wav")
     fileurl = "./files/hello.wav"
-    publicUrl = uploadOtherFile("hello.wav", fileurl)
     banglaText = banglaSpeechTOText(fileurl)
     act = getAct(banglaText)
     specs = getSpecs(banglaText)
@@ -83,11 +83,14 @@ def askVoice():
             'Content-Type': 'text/plain',
             'x-api-key': apikey,
         },
-        'data': response
+        'data': response.encode('utf8')
     }
-    
-    return jsonify({'act': act,'question': banglaText, 'voice': status, 'answer': response, 'specs': specs, 'docs': sdocs})
-
+    with open('output.m4a', 'wb') as f:
+        f.write(requests.post(url, **options).content)
+    status = uploadOtherFile("output.m4a", "output.m4a")
+    if status:
+        deleteFile("output.m4a")
+    return jsonify({'act': act,'question':banglaText, 'voice':status, 'answer': response, 'specs': specs, 'docs': sdocs})
 
 @app.route('/reask', methods=['POST'])
 @cross_origin()
