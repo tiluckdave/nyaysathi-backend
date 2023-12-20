@@ -83,14 +83,10 @@ def askVoice():
             'Content-Type': 'text/plain',
             'x-api-key': apikey,
         },
-        'data': response.encode('utf8')
+        'data': response
     }
-    with open('output.m4a', 'wb') as f:
-        f.write(requests.post(url, **options).content)
-    status = uploadOtherFile("output.m4a", "output.m4a")
-    if status:
-        deleteFile("output.m4a")
-    return jsonify({'act': act,'question':banglaText, 'voice':status, 'answer': response, 'specs': specs, 'docs': sdocs})
+    
+    return jsonify({'act': act,'question': banglaText, 'voice': status, 'answer': response, 'specs': specs, 'docs': sdocs})
 
 
 @app.route('/reask', methods=['POST'])
@@ -162,9 +158,6 @@ def upload():
     file.save(f"files/{filename}")
     fileurl = "./files/" + filename
     publicUrl = uploadOtherFile(filename, fileurl)
-    banglaText = banglaSpeechTOText(fileurl)
-    print(banglaText)
-    print(publicUrl)
     if publicUrl != False:
         deleteFile(fileurl)
     return jsonify({'url': publicUrl})
@@ -183,7 +176,7 @@ def kyr():
     rights = getKYR(data)
     rights = rights.split("\n")
     rights = list(filter(None, rights))
-    rights = [right[3:] for right in rights]
+    rights = [right[2:] for right in rights]
     rights = [right.strip() for right in rights]
     print(rights)
     return jsonify({'rights': rights})

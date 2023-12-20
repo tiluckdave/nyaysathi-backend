@@ -13,7 +13,7 @@ Answer the question using the given knowledge hub as a part of the retriver. Do 
 
 """
 
-ActPrompt = """Based on the below question can you give the law, act, section, subsection assosciated with it in context with the indian judicial system. get me the response strictly in 2 - 3 words. do not format the response in a list or any other format. just give me the response in plain text. Do not add any sections, subsections or specific laws. Always give response in english.
+ActPrompt = """Based on the below text can you give related name of law, act, section, subsection assosciated with it in context with the indian judicial system. get me the response strictly in 2 - 3 words. do not format the response in a list or any other format. just give me the response in plain text. Do not add any sections, subsections or specific laws. Always give response in english.
 
 
 """

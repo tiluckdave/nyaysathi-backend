@@ -39,5 +39,5 @@ def encodeImage(image_path):
 
 def banglaSpeechTOText(audio_path):
     s2t = Speech2Text()
-    text = s2t.recognize(audio_path)
+    text = s2t.transcribe(audio_path)
     return text
