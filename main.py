@@ -51,7 +51,27 @@ def askVoice():
     fileurl = "./files/hello.wav"
     publicUrl = uploadOtherFile("hello.wav", fileurl)
     banglaText = banglaSpeechTOText(fileurl)
-    print(banglaText)
+    act = getAct(banglaText)
+    specs = getSpecs(banglaText)
+    docs = searchKanoon(act)
+    text = ""
+    sdocs = []
+    for doc in docs[:5]:
+        docid = doc['tid']
+        sdocs.append(docid)
+        print(docid)
+        if not fileExists(f"{docid}.txt"):
+            content = getDocument(docid)
+            print(content)
+            parsedContent = htmlToText(content)
+            path = createFileWithContent(docid, parsedContent)
+            status = uploadFile(docid, path)
+            if status:
+                deleteFile(path)
+        text += getFileContent(f"{docid}.txt") + "\n\n\n\n"
+    response = generateResponse(text, banglaText)
+    return jsonify({'act': act,'question':banglaText, 'answer': response, 'specs': specs, 'docs': sdocs})
+
 
 @app.route('/reask', methods=['POST'])
 @cross_origin()
