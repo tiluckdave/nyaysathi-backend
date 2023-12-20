@@ -1,4 +1,6 @@
 import requests
+import string
+import random
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 from pdf2image import convert_from_bytes
@@ -7,7 +9,7 @@ from lib.llm import generateResponse, getAct, generateChatResponse, visionOCR, S
 # from google.cloud import texttospeech
 from lib.firebase import uploadFile, fileExists, getFileContent, uploadOtherFile
 from lib.utils import htmlToText, createFileWithContent, deleteFile, encodeImage, banglaSpeechTOText
-
+import datetime
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -45,14 +47,17 @@ def ask():
     response = generateResponse(text, question)
     return jsonify({'act': act, 'answer': response, 'specs': specs, 'docs': sdocs})
 
+
+
 @app.route('/ask-voice', methods=['POST'])
 @cross_origin()
 def askVoice():
+    current_time = datetime.datetime.now().strftime("%H%M%S")
     print(request.files['file'])
     file = request.files['file']
     # lang = request.form.get('lang')
-    file.save(f"files/hello.wav")
-    fileurl = "./files/hello.wav"
+    file.save(f"files/{current_time}_hello.wav")
+    fileurl = f"./files/{current_time}_hello.wav"
     banglaText = banglaSpeechTOText(fileurl)
     act = getAct(banglaText)
     specs = getSpecs(banglaText)
@@ -85,11 +90,11 @@ def askVoice():
         },
         'data': response.encode('utf8')
     }
-    with open('output.m4a', 'wb') as f:
+    with open('./files/output.m4a', 'wb') as f:
         f.write(requests.post(url, **options).content)
-    status = uploadOtherFile("output.m4a", "output.m4a")
+    status = uploadOtherFile(f"{current_time}_hello.m4a", "./files/output.m4a")
     if status:
-        deleteFile("output.m4a")
+        deleteFile("./files/output.m4a")
     return jsonify({'act': act,'question':banglaText, 'voice':status, 'answer': response, 'specs': specs, 'docs': sdocs})
 
 @app.route('/reask', methods=['POST'])
