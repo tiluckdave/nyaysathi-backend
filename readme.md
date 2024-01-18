@@ -23,9 +23,9 @@ pip install -r requirements.txt
 - Create a .env file and add the following variables.
 
 ```env
-OPENAI_API_KEY=<your openai api key>
-OPENAI_ORG_ID=<your openai org id>
-NARAKEET_API_KEY=<your narakeet api key>
+OPENAI_KEY=<your openai api key>
+ORG=<your openai org id>
+NARAKEET_KEY=<your narakeet api key>
 ```
 
 - Run the flask server.

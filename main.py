@@ -48,7 +48,7 @@ def ask():
                 deleteFile(path)
         text += getFileContent(f"{docid}.txt") + "\n\n\n\n"
     response = generateResponse(text, question)
-    apikey = 'dNfhDO4BhWNrZ6CbAXBkaCIubUV5m9P6bA1SgF8b'
+    apikey = os.getenv('NARAKEET_KEY')
     voice = 'salman'
     url = f'https://api.narakeet.com/text-to-speech/m4a?voice={voice}'
 
