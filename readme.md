@@ -31,7 +31,7 @@ NARAKEET_KEY=<your narakeet api key>
 - Run the flask server.
 
 ```bash
-python3 app.py
+flask run
 ```
 
 - The server will be running on port 5000.
