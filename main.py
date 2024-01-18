@@ -6,7 +6,6 @@ from flask_cors import CORS, cross_origin
 from pdf2image import convert_from_bytes
 from lib.kanoon import searchKanoon, getDocument
 from lib.llm import generateResponse, getAct, generateChatResponse, visionOCR, SummarizeLegalText, getKYR, getSpecs, regenerateResponse
-# from google.cloud import texttospeech
 from lib.firebase import uploadFile, fileExists, getFileContent, uploadOtherFile
 from lib.utils import htmlToText, createFileWithContent, deleteFile, encodeImage, banglaSpeechTOText
 import datetime
@@ -23,6 +22,9 @@ def test():
 @app.route('/ask', methods=['POST'])
 @cross_origin()
 def ask():
+    """
+    This endpoint accepts text input from the frontend and process it to generate a text response.
+    """
     current_time = datetime.datetime.now().strftime("%H%M%S")
     question = request.json['question']
     act = getAct(question)
@@ -69,6 +71,9 @@ def ask():
 @app.route('/ask-voice', methods=['POST'])
 @cross_origin()
 def askVoice():
+    """
+    This endpoint accepts voice input from the frontend and process it to generate a voice response.
+    """
     current_time = datetime.datetime.now().strftime("%H%M%S")
     print(request.files['file'])
     file = request.files['file']
@@ -117,6 +122,9 @@ def askVoice():
 @app.route('/reask', methods=['POST'])
 @cross_origin()
 def reask():
+    """
+    If the user is not satisfied with the response, this endpoint is called to generate a new response.
+    """
     current_time = datetime.datetime.now().strftime("%H%M%S")
     response = request.json['response']
     question = request.json['question']
@@ -147,6 +155,9 @@ def reask():
 @app.route('/chat', methods=['POST'])
 @cross_origin()
 def chat():
+    """
+    This endpoint simulates a chat between the user and the llm by generating ths response based on user's question and previous chat context.
+    """
     act = request.json['act']
     previousContext = request.json['context']
     followUpQuestion = request.json['question']
@@ -170,6 +181,9 @@ def chat():
 @app.route('/summarize', methods=['POST'])
 @cross_origin()
 def summarize():
+    """
+    This endpoint accepts a pdf or an image file as input and generates a summary of the text present in the file in the language specified by the user.
+    """
     current_time = datetime.datetime.now().strftime("%H%M%S")
     file = request.files['file']
     lang = request.form.get('lang')
@@ -213,6 +227,9 @@ def summarize():
 @app.route('/upload', methods=['POST'])
 @cross_origin()
 def upload():
+    """
+    This endpoint is used to upload user files to the firebase storage.
+    """
     file = request.files['file']
     filename = file.filename
     print(filename)
@@ -227,6 +244,9 @@ def upload():
 @app.route('/kyr', methods=['POST'])
 @cross_origin()
 def kyr():
+    """
+    This endpoint is used to find out the user rights based on his/her age, gender, loacation, and profession.
+    """
     age = request.json['age']
     gender = request.json['gender']
     city = request.json['city']
